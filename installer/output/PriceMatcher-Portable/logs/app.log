@@ -1,0 +1,9 @@
+2026-09-16 09:37:47,964 | INFO    | pricematcher.main  | starting gui
+2026-09-16 09:38:14,739 | INFO    | pricematcher.main  | starting gui
+2026-09-16 09:39:24,055 | INFO    | pricematcher.pdf   | pdf: 165 rows from Pricelist-1405-06-23.pdf (ocr pages: 0)
+2026-09-16 09:39:24,055 | INFO    | pricematcher.validator | validator(price): {'input': 165, 'dropped_no_price': 0, 'duplicates': 0, 'output': 165}
+2026-09-16 09:39:24,317 | INFO    | pricematcher.excel | excel: 2189 rows, mapping={0: 'code', 1: 'name', 2: 'stock'}
+2026-09-16 09:39:25,694 | INFO    | pricematcher.validator | validator(stock): {'input': 2189, 'dropped': 0, 'no_stock_value': 0, 'output': 2189}
+2026-09-16 09:39:25,705 | INFO    | pricematcher.matcher | index built over 165 price rows
+2026-09-16 09:39:26,680 | INFO    | pricematcher.pipeline | pipeline done in 3.22s: {'total': 2189, 'exact': 0, 'high': 30, 'review': 88, 'not_found': 2071, 'matched': 30, 'priced': 118, 'in_stock': 52, 'out_of_stock': 66, 'elapsed': 3.22, 'pdf_rows': 165, 'excel_rows': 2189, 'brand': 'شوان'}
+2026-09-16 09:39:35,321 | INFO    | pricematcher.exporter | excel exported: C:\Users\k.musavi\Desktop\price-match-شوان-20260916-0939.xlsx (2189 rows)

@@ -1,0 +1,17 @@
+# --- core (required) ---
+pywebview>=5.1          # desktop window (uses the WebView2 runtime on Windows)
+PyMuPDF>=1.24.0         # PDF text + table extraction
+openpyxl>=3.1.2         # Excel read/write (streaming, no pandas)
+rapidfuzz>=3.9.0        # fuzzy matching
+reportlab>=4.2.0        # PDF export
+
+# --- Persian shaping for the PDF export (small, pure python) ---
+arabic-reshaper>=3.0.0
+python-bidi>=0.4.2
+
+# --- optional: only needed for scanned (image-based) PDFs ---
+Pillow>=10.3.0
+pytesseract>=0.3.13     # also needs the Tesseract engine installed on Windows
+
+# --- build only ---
+# pyinstaller>=6.6.0

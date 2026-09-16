@@ -1,0 +1,52 @@
+{
+    "exact_threshold": 99,
+    "fuzzy_threshold": 85,
+    "review_threshold": 70,
+    "ambiguity_margin": 4,
+    "weights": {
+        "code": 0.45,
+        "spec": 0.25,
+        "text": 0.3
+    },
+    "spec_conflict_factor": 0.35,
+    "brand_prefix_bonus": 4,
+    "neutral_spec_score": 55,
+    "discriminator_penalty": 12,
+    "discriminative_terms": null,
+    "text_coverage_exponent": 0.6,
+    "restrict_to_price_list_brands": true,
+    "brand_prefixes": {
+        "شیله": [
+            "SC"
+        ],
+        "schiele": [
+            "SC"
+        ],
+        "ویسنا": [
+            "VS"
+        ],
+        "visena": [
+            "VS"
+        ]
+    },
+    "synonyms": null,
+    "context_rules": null,
+    "max_candidates": 60,
+    "min_token_len": 2,
+    "ocr_enabled": true,
+    "ocr_language": "fas+eng",
+    "ocr_dpi": 200,
+    "scanned_char_threshold": 40,
+    "pdf_row_tolerance": 3.5,
+    "pdf_orphan_row_gap": 12,
+    "min_valid_price": 1000,
+    "max_valid_price": 10000000000,
+    "max_rows_in_ui": 20000,
+    "log_level": "INFO",
+    "pdf_font_candidates": [
+        "C:/Windows/Fonts/tahoma.ttf",
+        "C:/Windows/Fonts/arial.ttf",
+        "C:/Windows/Fonts/segoeui.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+    ]
+}
