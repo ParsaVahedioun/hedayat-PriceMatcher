@@ -115,5 +115,35 @@ class BrandGateTests(MatcherTestCase):
         self.assertIsNone(result.matched)
 
 
+class TargetBrandSpacingTests(unittest.TestCase):
+    """A compound Persian brand name ("امیدنور") is spelled with or
+    without the inner space depending on who typed it - the PDF's brand
+    field and the inventory's product names very often disagree with each
+    other on this, and neither spelling is "the" correct one."""
+
+    def setUp(self):
+        self.price_index = PriceIndex([
+            price("1", 1800000, text="لامپ 7 وات ال ای دی اشکی شمعی"),
+        ])
+
+    def match(self, name, target_brand):
+        matcher = Matcher({"target_brand": target_brand})
+        item = prepare_stock(StockItem(code="1", name=name, stock=1), {})
+        return matcher.match_one(item, self.price_index)
+
+    def test_typed_brand_has_a_space_the_inventory_name_does_not(self):
+        result = self.match("لامپ 7 وات ال ای دی اشکی شمعی امیدنور", "امید نور")
+        self.assertIsNotNone(result.matched)
+
+    def test_typed_brand_has_no_space_the_inventory_name_does(self):
+        result = self.match("لامپ 7 وات ال ای دی اشکی شمعی امید نور", "امیدنور")
+        self.assertIsNotNone(result.matched)
+
+    def test_a_genuinely_different_brand_is_still_rejected(self):
+        result = self.match("لامپ 7 وات ال ای دی اشکی شمعی شوان", "امیدنور")
+        self.assertIsNone(result.matched)
+        self.assertEqual(result.status, STATUS_NOT_FOUND)
+
+
 if __name__ == "__main__":  # pragma: no cover
     unittest.main()

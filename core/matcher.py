@@ -359,7 +359,11 @@ class Matcher:
         # that exact brand word are eligible, so a "شوان" PDF can never end
         # up pricing a "ویسنا" row and vice versa.
         if self.target_brand:
-            if normalize_text(self.target_brand) not in normalize_text(item.name):
+            # spacing inside a Persian brand word is not meaningful ("امید
+            # نور" and "امیدنور" are the same brand), so this compares the
+            # space-free form rather than normalize_text's, which would
+            # treat them as different strings and silently price nothing.
+            if dense(self.target_brand) not in dense(item.name):
                 return MatchResult(
                     item=item, status=STATUS_NOT_FOUND, match_type=MATCH_NONE,
                     note="برند این کالا با برند لیست قیمت وارد شده یکی نیست",

@@ -5,9 +5,9 @@ import re
 
 from utils.text_utils import fix_persian_chars, to_english_digits
 
-# 1,250,000 | 1.250.000 | 1 250 000 | 1250000 | 1250000.50
-_NUM_RE = re.compile(r"\d{1,3}(?:[.,\u066c\u066b\s]\d{3})+(?:[.,]\d{1,2})?|\d+(?:[.,]\d{1,2})?")
-_SEPS = "\u066c\u066b,"  # arabic thousands sep, arabic decimal sep, comma
+# 1,250,000 | 1.250.000 | 1 250 000 | 1250000 | 1250000.50 | ۱،۲۵۰،۰۰۰
+_NUM_RE = re.compile(r"\d{1,3}(?:[.,\u066c\u066b\u060c\s]\d{3})+(?:[.,]\d{1,2})?|\d+(?:[.,]\d{1,2})?")
+_SEPS = "\u066c\u066b\u060c,"  # arabic thousands sep, arabic decimal sep, plain arabic comma, comma
 
 
 def _clean_number(raw: str) -> str:

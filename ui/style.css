@@ -60,6 +60,41 @@ body{
 .picker-label{font-weight:bold}
 .picker-file{color:var(--muted); font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 
+/* -------- pdf list (multi-file) -------- */
+.pdf-list-header{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px}
+.pdf-list{list-style:none; margin:0 0 14px; padding:0}
+.pdf-list-empty{
+  border:1px dashed var(--line); border-radius:var(--radius); padding:16px;
+  color:var(--muted); font-size:12px; text-align:center;
+}
+.pdf-list-item{
+  display:flex; align-items:center; gap:10px;
+  border:1px solid var(--line); border-radius:var(--radius);
+  background:var(--panel-alt); padding:10px 12px; margin-bottom:8px;
+}
+.pdf-list-item.brand-missing{border-color:var(--warn); background:var(--warn-bg)}
+.pdf-list-name{flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:bold; font-size:12px}
+.pdf-list-item input[type=text]{
+  width:150px; padding:8px 10px; border:1px solid var(--line); border-radius:var(--radius-sm);
+  font-family:inherit; font-size:13px; background:#fff;
+}
+.pdf-list-item input[type=text]:focus{border-color:var(--brand); outline:none; box-shadow:0 0 0 3px var(--brand-soft)}
+.pdf-remove{
+  border:none; background:transparent; color:var(--bad); cursor:pointer;
+  font-size:16px; line-height:1; padding:4px 8px; border-radius:6px;
+}
+.pdf-remove:hover{background:var(--bad-bg)}
+.hint-muted{color:var(--muted); text-align:right; line-height:1.7; margin:0 0 16px}
+
+/* -------- per-file summary on results -------- */
+.files-summary{margin-bottom:18px}
+.files-summary table{width:100%; border-collapse:collapse; font-size:12px;
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;}
+.files-summary th{background:var(--panel-alt); padding:8px; text-align:center; font-weight:bold; color:var(--muted)}
+.files-summary td{padding:8px; text-align:center; border-top:1px solid var(--line-soft)}
+.files-summary td.name{text-align:right}
+.files-summary tr.file-error td{background:var(--bad-bg); color:var(--bad)}
+
 .field{margin-bottom:16px}
 .field label{
   display:flex; align-items:center; gap:6px;

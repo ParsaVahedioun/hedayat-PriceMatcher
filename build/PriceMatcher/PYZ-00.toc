@@ -1,5 +1,4 @@
-('C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
- '(1)\\price-matcher\\build\\PriceMatcher\\PYZ-00.pyz',
+('C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\build\\PriceMatcher\\PYZ-00.pyz',
  [('PIL',
    'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
    '(1)\\price-matcher\\.venv\\Lib\\site-packages\\PIL\\__init__.py',
@@ -433,7 +432,7 @@
    'C:\\Users\\k.musavi\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\annotationlib.py',
    'PYMODULE'),
   ('api',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 (1)\\price-matcher\\api.py',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\api.py',
    'PYMODULE'),
   ('arabic_reshaper',
    'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
@@ -818,48 +817,37 @@
    'C:\\Users\\k.musavi\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\copy.py',
    'PYMODULE'),
   ('core',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\core\\__init__.py',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\core\\__init__.py',
    'PYMODULE'),
   ('core.attributes',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\core\\attributes.py',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\core\\attributes.py',
    'PYMODULE'),
   ('core.errors',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\core\\errors.py',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\core\\errors.py',
    'PYMODULE'),
   ('core.excel_reader',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\core\\excel_reader.py',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\core\\excel_reader.py',
    'PYMODULE'),
   ('core.exporter',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\core\\exporter.py',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\core\\exporter.py',
    'PYMODULE'),
   ('core.matcher',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\core\\matcher.py',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\core\\matcher.py',
    'PYMODULE'),
   ('core.normalizer',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\core\\normalizer.py',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\core\\normalizer.py',
    'PYMODULE'),
   ('core.pdf_reader',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\core\\pdf_reader.py',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\core\\pdf_reader.py',
    'PYMODULE'),
   ('core.pipeline',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\core\\pipeline.py',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\core\\pipeline.py',
    'PYMODULE'),
   ('core.similarity',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\core\\similarity.py',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\core\\similarity.py',
    'PYMODULE'),
   ('core.validator',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\core\\validator.py',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\core\\validator.py',
    'PYMODULE'),
   ('csv',
    'C:\\Users\\k.musavi\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\csv.py',
@@ -1136,12 +1124,10 @@
    'C:\\Users\\k.musavi\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\mimetypes.py',
    'PYMODULE'),
   ('models',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\models\\__init__.py',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\models\\__init__.py',
    'PYMODULE'),
   ('models.product',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\models\\product.py',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\models\\product.py',
    'PYMODULE'),
   ('multiprocessing',
    'C:\\Users\\k.musavi\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\multiprocessing\\__init__.py',
@@ -3265,24 +3251,19 @@
    'C:\\Users\\k.musavi\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\urllib\\response.py',
    'PYMODULE'),
   ('utils',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\utils\\__init__.py',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\utils\\__init__.py',
    'PYMODULE'),
   ('utils.config',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\utils\\config.py',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\utils\\config.py',
    'PYMODULE'),
   ('utils.logger',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\utils\\logger.py',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\utils\\logger.py',
    'PYMODULE'),
   ('utils.number_utils',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\utils\\number_utils.py',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\utils\\number_utils.py',
    'PYMODULE'),
   ('utils.text_utils',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\utils\\text_utils.py',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\utils\\text_utils.py',
    'PYMODULE'),
   ('uuid',
    'C:\\Users\\k.musavi\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\uuid.py',

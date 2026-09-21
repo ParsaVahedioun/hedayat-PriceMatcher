@@ -3,7 +3,11 @@
   "use strict";
 
   var PAGE = 300;                 // rows rendered per chunk
-  var state = { rows: [], stats: {}, filter: "all", search: "", shown: 0, filtered: [] };
+  var state = {
+    rows: [], stats: {}, filter: "all", search: "", shown: 0, filtered: [],
+    pdfItems: [],                 // [{path, name, brand}]
+    excelReady: false,
+  };
 
   var $ = function (id) { return document.getElementById(id); };
 
@@ -26,20 +30,86 @@
     return bridge[method].apply(bridge, args);
   }
 
+  function escapeHtml(text) {
+    return String(text === null || text === undefined ? "" : text)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
   /* ------------------------------------------------------------ home */
   function refreshStartButton() {
-    var ready = $("pick-pdf").classList.contains("filled") &&
-      $("pick-excel").classList.contains("filled") &&
-      $("brand-name").value.trim() !== "";
+    var ready = state.excelReady && state.pdfItems.length > 0 &&
+      state.pdfItems.every(function (item) { return (item.brand || "").trim() !== ""; });
     $("btn-start").disabled = !ready;
   }
 
-  function pick(kind) {
-    var method = kind === "pdf" ? "select_pdf" : "select_excel";
-    call(method).then(function (res) {
+  function renderPdfList() {
+    var list = $("pdf-list");
+    var empty = $("pdf-list-empty");
+    // wipe everything except the empty-state placeholder, then rebuild
+    var items = list.querySelectorAll(".pdf-list-item");
+    for (var i = 0; i < items.length; i++) items[i].remove();
+    empty.hidden = state.pdfItems.length > 0;
+
+    state.pdfItems.forEach(function (item) {
+      var li = document.createElement("li");
+      li.className = "pdf-list-item" + ((item.brand || "").trim() ? "" : " brand-missing");
+      li.dataset.path = item.path;
+
+      var name = document.createElement("span");
+      name.className = "pdf-list-name";
+      name.textContent = item.name;
+      name.title = item.path;
+
+      var brandInput = document.createElement("input");
+      brandInput.type = "text";
+      brandInput.placeholder = "نام برند (مثلاً شوان)";
+      brandInput.value = item.brand || "";
+      brandInput.addEventListener("input", function () {
+        item.brand = brandInput.value.trim();
+        li.classList.toggle("brand-missing", item.brand === "");
+        call("set_pdf_brand", item.path, item.brand);
+        refreshStartButton();
+      });
+
+      var removeBtn = document.createElement("button");
+      removeBtn.className = "pdf-remove";
+      removeBtn.type = "button";
+      removeBtn.title = "حذف این فایل";
+      removeBtn.textContent = "✕";
+      removeBtn.addEventListener("click", function () {
+        call("remove_pdf", item.path).then(function () {
+          state.pdfItems = state.pdfItems.filter(function (p) { return p.path !== item.path; });
+          renderPdfList();
+          refreshStartButton();
+        });
+      });
+
+      li.appendChild(removeBtn);
+      li.appendChild(brandInput);
+      li.appendChild(name);
+      list.appendChild(li);
+    });
+  }
+
+  function pickPdfs() {
+    call("select_pdfs").then(function (res) {
+      $("home-error").textContent = "";
       if (res && res.ok) {
-        $(kind + "-name").textContent = res.name;
-        $("pick-" + kind).classList.add("filled");
+        state.pdfItems = res.items || [];
+        renderPdfList();
+      } else if (res && res.error) {
+        // "no file selected" is a normal cancel - do not shout about it
+      }
+      refreshStartButton();
+    });
+  }
+
+  function pickExcel() {
+    call("select_excel").then(function (res) {
+      if (res && res.ok) {
+        $("excel-name").textContent = res.name;
+        $("pick-excel").classList.add("filled");
+        state.excelReady = true;
         $("home-error").textContent = "";
       }
       refreshStartButton();
@@ -48,10 +118,9 @@
 
   function start() {
     $("home-error").textContent = "";
-    var brand = $("brand-name").value.trim();
     setProgress(0, "شروع...");
     show("processing");
-    call("process_files", brand).then(function (res) {
+    call("process_batch").then(function (res) {
       if (!res || !res.ok) {
         show("home");
         $("home-error").textContent = (res && res.error) || "شروع پردازش ممکن نشد.";
@@ -91,6 +160,7 @@
       state.rows = res.rows || [];
       state.stats = res.stats || {};
       renderSummary();
+      renderFilesSummary();
       applyFilter();
       show("results");
     });
@@ -109,6 +179,27 @@
     $("summary").innerHTML = cards.map(function (c) {
       return '<div class="stat ' + c[0] + '"><b>' + c[2] + "</b><span>" + c[1] + "</span></div>";
     }).join("");
+  }
+
+  function renderFilesSummary() {
+    var files = state.stats.files;
+    var box = $("files-summary");
+    if (!files || files.length < 1) {
+      box.innerHTML = "";
+      return;
+    }
+    var rows = files.map(function (f) {
+      var status = f.ok ? (f.priced + " ردیف قیمت‌گذاری شد") : ("خطا: " + (f.error || ""));
+      return "<tr class='" + (f.ok ? "" : "file-error") + "'>" +
+        "<td class='name'>" + escapeHtml(f.name) + "</td>" +
+        "<td>" + escapeHtml(f.brand || "-") + "</td>" +
+        "<td>" + (f.pdf_rows || 0) + "</td>" +
+        "<td>" + escapeHtml(status) + "</td>" +
+        "</tr>";
+    }).join("");
+    box.innerHTML =
+      "<table><thead><tr><th>فایل PDF</th><th>برند</th><th>ردیف خوانده‌شده</th><th>نتیجه</th></tr></thead>" +
+      "<tbody>" + rows + "</tbody></table>";
   }
 
   function matchesFilter(row) {
@@ -131,7 +222,7 @@
     state.shown = 0;
     $("result-body").innerHTML = "";
     if (!state.filtered.length) {
-      $("result-body").innerHTML = '<tr><td colspan="4" class="empty">موردی یافت نشد.</td></tr>';
+      $("result-body").innerHTML = '<tr><td colspan="5" class="empty">موردی یافت نشد.</td></tr>';
       $("btn-more").hidden = true;
       return;
     }
@@ -141,11 +232,6 @@
   function num(value) {
     if (value === null || value === undefined) return "-";
     return Number(value).toLocaleString("en-US");
-  }
-
-  function escapeHtml(text) {
-    return String(text === null || text === undefined ? "" : text)
-      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
   function renderChunk() {
@@ -160,6 +246,7 @@
         "<td class='name'>" + escapeHtml(row.name) + "</td>" +
         "<td>" + num(row.stock) + "</td>" +
         "<td class='price'>" + num(row.price) + "</td>" +
+        "<td>" + escapeHtml(row.source || "-") + "</td>" +
         "</tr>"
       );
     }
@@ -204,26 +291,29 @@
     });
   }
 
+  function resetHome() {
+    call("reset");
+    state.pdfItems = [];
+    state.excelReady = false;
+    renderPdfList();
+    $("excel-name").textContent = "انتخاب نشده";
+    $("pick-excel").classList.remove("filled");
+    refreshStartButton();
+    show("home");
+  }
+
   /* ------------------------------------------------------- listeners */
   document.addEventListener("click", function (event) {
     var target = event.target.closest("[data-action],[data-filter]");
     if (!target) return;
     var action = target.getAttribute("data-action");
-    if (action === "select-pdf") pick("pdf");
-    else if (action === "select-excel") pick("excel");
+    if (action === "select-pdf") pickPdfs();
+    else if (action === "select-excel") pickExcel();
     else if (action === "start") start();
     else if (action === "export-excel") exportFile("xlsx");
     else if (action === "export-pdf") exportFile("pdf");
     else if (action === "save-config") saveConfig();
-    else if (action === "new-run") {
-      call("reset");
-      $("pdf-name").textContent = $("excel-name").textContent = "انتخاب نشده";
-      $("pick-pdf").classList.remove("filled");
-      $("pick-excel").classList.remove("filled");
-      $("brand-name").value = "";
-      refreshStartButton();
-      show("home");
-    }
+    else if (action === "new-run") resetHome();
     var filter = target.getAttribute("data-filter");
     if (filter) {
       var chips = document.querySelectorAll(".chip");
@@ -233,8 +323,6 @@
       applyFilter();
     }
   });
-
-  $("brand-name").addEventListener("input", refreshStartButton);
 
   $("btn-more").addEventListener("click", renderChunk);
 

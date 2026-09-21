@@ -15,6 +15,13 @@ class ShapingTests(unittest.TestCase):
     def test_presentation_forms_fold_back_to_plain_letters(self):
         self.assertEqual(shape_to_plain("\ufee3\ufeec\ufe98\ufe8e\ufe91\ufbfd"), "مهتابی")
 
+    def test_the_two_common_spellings_of_battery_are_treated_as_the_same_word(self):
+        # باتری vs باطری - both spellings are common in Iranian price lists
+        # and inventories; they must compare equal or a battery row never
+        # gets matched against the price list that spelled it differently
+        self.assertEqual(normalize_text("باتری قلمی AA"), normalize_text("باطری قلمی AA"))
+        self.assertIn("باتری", dense("باطریدار"))
+
     def test_broken_subset_font_glyphs_are_repaired(self):
         # the exact breakage the Schiele price list has: ب, ی, پ, ن, ت mapped
         # onto latin code points by the embedded subset font

@@ -22,9 +22,9 @@ log = get_logger("api")
 class Api:
     def __init__(self):
         self.window = None
-        self.pdf_path: str = ""
+        # each item: {"path": str, "name": str, "brand": str}
+        self.pdf_items: list[dict] = []
         self.excel_path: str = ""
-        self.brand: str = ""
         self.rows: list[dict] = []
         self.stats: dict = {}
         self._busy = False
@@ -48,12 +48,40 @@ class Api:
             log.warning("emit failed: %s", exc)
 
     # ------------------------------------------------------ file pickers
-    def select_pdf(self) -> dict:
-        path = self._pick_file(("PDF (*.pdf)",))
-        if path:
-            self.pdf_path = path
-            return self._ok(path=path, name=os.path.basename(path))
-        return self._fail("فایلی انتخاب نشد.")
+    def select_pdfs(self) -> dict:
+        """Open the file picker for one or several PDF price lists at once.
+
+        Newly picked files are appended to the running list (already-added
+        paths are skipped), so the user can call this more than once to
+        keep adding price lists before starting the run.
+        """
+        paths = self._pick_files(("PDF (*.pdf)",), multiple=True)
+        if not paths:
+            return self._fail("فایلی انتخاب نشد.")
+        existing = {item["path"] for item in self.pdf_items}
+        added: list[dict] = []
+        for path in paths:
+            if path in existing:
+                continue
+            item = {"path": path, "name": os.path.basename(path), "brand": ""}
+            self.pdf_items.append(item)
+            added.append(item)
+            existing.add(path)
+        return self._ok(items=list(self.pdf_items), added=added)
+
+    def remove_pdf(self, path: str) -> dict:
+        self.pdf_items = [item for item in self.pdf_items if item["path"] != path]
+        return self._ok(items=list(self.pdf_items))
+
+    def set_pdf_brand(self, path: str, brand: str) -> dict:
+        for item in self.pdf_items:
+            if item["path"] == path:
+                item["brand"] = (brand or "").strip()
+                return self._ok(items=list(self.pdf_items))
+        return self._fail("این فایل در فهرست نیست.")
+
+    def get_pdf_items(self) -> dict:
+        return self._ok(items=list(self.pdf_items))
 
     def select_excel(self) -> dict:
         path = self._pick_file(("Excel (*.xlsx;*.xlsm)",))
@@ -63,25 +91,30 @@ class Api:
         return self._fail("فایلی انتخاب نشد.")
 
     def _pick_file(self, file_types) -> str:
+        paths = self._pick_files(file_types, multiple=False)
+        return paths[0] if paths else ""
+
+    def _pick_files(self, file_types, multiple: bool) -> list[str]:
         import webview
 
-        result = self.window.create_file_dialog(webview.OPEN_DIALOG, allow_multiple=False, file_types=file_types)
+        result = self.window.create_file_dialog(webview.OPEN_DIALOG, allow_multiple=multiple, file_types=file_types)
         if not result:
-            return ""
-        return result[0] if isinstance(result, (list, tuple)) else str(result)
+            return []
+        if isinstance(result, (list, tuple)):
+            return [str(p) for p in result]
+        return [str(result)]
 
     # --------------------------------------------------------- processing
-    def process_files(self, brand: str = "") -> dict:
+    def process_batch(self) -> dict:
         if self._busy:
             return self._fail("پردازش دیگری در حال اجراست.")
-        if not self.pdf_path:
-            return self._fail("فایل PDF لیست قیمت انتخاب نشده است.")
+        if not self.pdf_items:
+            return self._fail("هیچ فایل PDF‌ای انتخاب نشده است.")
         if not self.excel_path:
             return self._fail("فایل Excel انبار انتخاب نشده است.")
-        brand = (brand or "").strip()
-        if not brand:
-            return self._fail("نام برند لیست قیمت وارد نشده است.")
-        self.brand = brand
+        missing = [item["name"] for item in self.pdf_items if not (item.get("brand") or "").strip()]
+        if missing:
+            return self._fail("نام برند این فایل‌ها وارد نشده است: " + "، ".join(missing))
         self._busy = True
         threading.Thread(target=self._worker, daemon=True).start()
         return self._ok(started=True)
@@ -91,7 +124,7 @@ class Api:
             def progress(percent: int, message: str) -> None:
                 self._emit("progress", {"percent": percent, "message": message})
 
-            result = pipeline.run(self.pdf_path, self.excel_path, progress, brand=self.brand)
+            result = pipeline.run_batch(list(self.pdf_items), self.excel_path, progress)
             with self._lock:
                 self.rows = result["rows"]
                 self.stats = result["stats"]
@@ -123,6 +156,11 @@ class Api:
     def export_pdf(self, only_priced: bool = True) -> dict:
         return self._export("pdf", only_priced)
 
+    def _brand_slug(self) -> str:
+        brands = dict.fromkeys(item["brand"] for item in self.pdf_items if item.get("brand"))
+        text = "-".join(brands)
+        return "".join(ch for ch in text if ch not in '\\/:*?"<>|').strip()
+
     def _export(self, kind: str, only_priced: bool = True) -> dict:
         if not self.rows:
             return self._fail("نتیجه‌ای برای خروجی گرفتن وجود ندارد.")
@@ -130,7 +168,7 @@ class Api:
             if only_priced else list(self.rows)
         if not rows:
             return self._fail("هیچ کالایی قیمت پیدا نکرد.")
-        brand_slug = "".join(ch for ch in self.brand if ch not in '\\/:*?"<>|').strip()
+        brand_slug = self._brand_slug()
         prefix = f"price-match-{brand_slug}-" if brand_slug else "price-match-"
         default_name = time.strftime(f"{prefix}%Y%m%d-%H%M.{kind}")
         try:
@@ -152,7 +190,7 @@ class Api:
             path += "." + kind
         try:
             if kind == "xlsx":
-                export_excel(rows, path)
+                export_excel(rows, path, self.stats)
             else:
                 export_pdf(rows, path, self.stats)
         except AppError as exc:
@@ -176,5 +214,6 @@ class Api:
     def reset(self) -> dict:
         with self._lock:
             self.rows, self.stats = [], {}
-        self.pdf_path = self.excel_path = self.brand = ""
+        self.pdf_items = []
+        self.excel_path = ""
         return self._ok()

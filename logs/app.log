@@ -1,34 +1,12 @@
-2026-09-16 05:40:43,951 | INFO    | pricematcher.exporter | excel exported: /tmp/test_out.xlsx (2 rows)
-2026-09-16 05:41:15,986 | INFO    | pricematcher.matcher | index built over 1 price rows
-2026-09-16 05:41:15,987 | INFO    | pricematcher.pipeline | pipeline done in 0.00s: {'total': 2, 'exact': 0, 'high': 1, 'review': 0, 'not_found': 1, 'matched': 1, 'priced': 1, 'in_stock': 1, 'out_of_stock': 0, 'elapsed': 0.0, 'pdf_rows': 1, 'excel_rows': 2, 'brand': 'شیله'}
-2026-09-16 05:41:23,337 | INFO    | pricematcher.matcher | index built over 1 price rows
-2026-09-16 05:41:23,338 | INFO    | pricematcher.pipeline | pipeline done in 0.00s: {'total': 2, 'exact': 0, 'high': 1, 'review': 0, 'not_found': 1, 'matched': 1, 'priced': 1, 'in_stock': 1, 'out_of_stock': 0, 'elapsed': 0.0, 'pdf_rows': 1, 'excel_rows': 2, 'brand': ''}
-2026-09-16 05:41:31,119 | INFO    | pricematcher.pdf   | pdf: 3 rows from price.pdf (ocr pages: 0)
-2026-09-16 05:41:31,119 | INFO    | pricematcher.validator | validator(price): {'input': 3, 'dropped_no_price': 0, 'duplicates': 0, 'output': 3}
-2026-09-16 05:41:31,124 | INFO    | pricematcher.excel | excel: 3 rows, mapping={0: 'code', 1: 'name', 2: 'stock'}
-2026-09-16 05:41:31,125 | INFO    | pricematcher.validator | validator(stock): {'input': 3, 'dropped': 0, 'no_stock_value': 0, 'output': 3}
-2026-09-16 05:41:31,126 | INFO    | pricematcher.matcher | index built over 3 price rows
-2026-09-16 05:41:31,129 | INFO    | pricematcher.pipeline | pipeline done in 0.12s: {'total': 3, 'exact': 0, 'high': 2, 'review': 0, 'not_found': 1, 'matched': 2, 'priced': 2, 'in_stock': 2, 'out_of_stock': 0, 'elapsed': 0.12, 'pdf_rows': 3, 'excel_rows': 3, 'brand': ''}
-2026-09-16 05:41:31,134 | INFO    | pricematcher.exporter | excel exported: /tmp/tmp2q2_zi8g/out.xlsx (3 rows)
-2026-09-16 05:41:34,403 | INFO    | pricematcher.pdf   | pdf: 3 rows from price.pdf (ocr pages: 0)
-2026-09-16 05:41:34,403 | INFO    | pricematcher.validator | validator(price): {'input': 3, 'dropped_no_price': 0, 'duplicates': 0, 'output': 3}
-2026-09-16 05:41:34,408 | INFO    | pricematcher.excel | excel: 3 rows, mapping={0: 'code', 1: 'name', 2: 'stock'}
-2026-09-16 05:41:34,409 | INFO    | pricematcher.validator | validator(stock): {'input': 3, 'dropped': 0, 'no_stock_value': 0, 'output': 3}
-2026-09-16 05:41:34,409 | INFO    | pricematcher.matcher | index built over 3 price rows
-2026-09-16 05:41:34,413 | INFO    | pricematcher.pipeline | pipeline done in 0.07s: {'total': 3, 'exact': 0, 'high': 2, 'review': 0, 'not_found': 1, 'matched': 2, 'priced': 2, 'in_stock': 2, 'out_of_stock': 0, 'elapsed': 0.07, 'pdf_rows': 3, 'excel_rows': 3, 'brand': ''}
-2026-09-16 05:41:34,418 | INFO    | pricematcher.exporter | excel exported: /tmp/tmp3wa66904/out.xlsx (3 rows)
-2026-09-16 05:41:37,615 | INFO    | pricematcher.exporter | pdf exported: /tmp/test_out.pdf (1 rows)
-2026-09-16 06:04:02,413 | INFO    | pricematcher.pdf   | pdf: 3 rows from price.pdf (ocr pages: 0)
-2026-09-16 06:04:02,414 | INFO    | pricematcher.validator | validator(price): {'input': 3, 'dropped_no_price': 0, 'duplicates': 0, 'output': 3}
-2026-09-16 06:04:02,419 | INFO    | pricematcher.excel | excel: 3 rows, mapping={0: 'code', 1: 'name', 2: 'stock'}
-2026-09-16 06:04:02,421 | INFO    | pricematcher.validator | validator(stock): {'input': 3, 'dropped': 0, 'no_stock_value': 0, 'output': 3}
-2026-09-16 06:04:02,421 | INFO    | pricematcher.matcher | index built over 3 price rows
-2026-09-16 06:04:02,425 | INFO    | pricematcher.pipeline | pipeline done in 0.13s: {'total': 3, 'exact': 0, 'high': 2, 'review': 0, 'not_found': 1, 'matched': 2, 'priced': 2, 'in_stock': 2, 'out_of_stock': 0, 'elapsed': 0.13, 'pdf_rows': 3, 'excel_rows': 3, 'brand': ''}
-2026-09-16 06:04:02,432 | INFO    | pricematcher.exporter | excel exported: /tmp/tmpodkyak1c/out.xlsx (3 rows)
-2026-09-16 09:36:45,074 | INFO    | pricematcher.pdf   | pdf: 3 rows from price.pdf (ocr pages: 0)
-2026-09-16 09:36:45,074 | INFO    | pricematcher.validator | validator(price): {'input': 3, 'dropped_no_price': 0, 'duplicates': 0, 'output': 3}
-2026-09-16 09:36:45,080 | INFO    | pricematcher.excel | excel: 3 rows, mapping={0: 'code', 1: 'name', 2: 'stock'}
-2026-09-16 09:36:45,082 | INFO    | pricematcher.validator | validator(stock): {'input': 3, 'dropped': 0, 'no_stock_value': 0, 'output': 3}
-2026-09-16 09:36:45,082 | INFO    | pricematcher.matcher | index built over 3 price rows
-2026-09-16 09:36:45,083 | INFO    | pricematcher.pipeline | pipeline done in 0.14s: {'total': 3, 'exact': 0, 'high': 2, 'review': 0, 'not_found': 1, 'matched': 2, 'priced': 2, 'in_stock': 2, 'out_of_stock': 0, 'elapsed': 0.14, 'pdf_rows': 3, 'excel_rows': 3, 'brand': ''}
-2026-09-16 09:36:45,097 | INFO    | pricematcher.exporter | excel exported: C:\Users\k.musavi\AppData\Local\Temp\tmp9cuiq0ed\out.xlsx (3 rows)
+2026-09-20 09:25:42,182 | INFO    | pricematcher.pdf   | pdf: 3 rows from price.pdf (ocr pages: 0)
+2026-09-20 09:25:42,182 | INFO    | pricematcher.validator | validator(price): {'input': 3, 'dropped_no_price': 0, 'duplicates': 0, 'output': 3}
+2026-09-20 09:25:42,189 | INFO    | pricematcher.excel | excel: 3 rows, mapping={0: 'code', 1: 'name', 2: 'stock'}
+2026-09-20 09:25:42,191 | INFO    | pricematcher.validator | validator(stock): {'input': 3, 'dropped': 0, 'no_stock_value': 0, 'output': 3}
+2026-09-20 09:25:42,192 | INFO    | pricematcher.matcher | index built over 3 price rows
+2026-09-20 09:25:42,206 | INFO    | pricematcher.pipeline | pipeline done in 0.60s: {'total': 3, 'exact': 0, 'high': 2, 'review': 0, 'not_found': 1, 'matched': 2, 'priced': 2, 'in_stock': 2, 'out_of_stock': 0, 'elapsed': 0.6, 'pdf_rows': 3, 'excel_rows': 3, 'brand': ''}
+2026-09-20 09:25:42,233 | INFO    | pricematcher.exporter | excel exported: C:\Users\k.musavi\AppData\Local\Temp\tmp6snfei7g\out.xlsx (3 rows)
+2026-09-20 09:25:42,250 | INFO    | pricematcher.pipeline | batch pipeline done in 0.00s over 1 file(s): priced=0/1
+2026-09-20 09:25:42,251 | WARNING | pricematcher.pipeline | batch: A failed: خراب
+2026-09-20 09:25:42,255 | WARNING | pricematcher.pipeline | batch: A failed: این فایل خراب است
+2026-09-20 09:25:42,255 | INFO    | pricematcher.pipeline | batch pipeline done in 0.00s over 2 file(s): priced=1/1
+2026-09-20 09:25:42,257 | INFO    | pricematcher.pipeline | batch pipeline done in 0.00s over 2 file(s): priced=2/2

@@ -18,6 +18,7 @@ import re
 
 from utils.text_utils import (
     clean_spaces,
+    dense,
     fix_persian_chars,
     normalize_code,
     normalize_text,
@@ -243,9 +244,12 @@ def extract_codes(raw: str) -> list[str]:
 def detect_brand(raw: str, brand_prefixes: dict | None = None) -> str:
     """Which price-list brand a row belongs to (empty when none applies)."""
     table = brand_prefixes or DEFAULT_BRAND_PREFIXES
-    key = normalize_text(raw)
+    # dense (space-free), not normalize_text: "امید نور" and "امیدنور" name
+    # the same brand, and a Persian PDF/Excel author is never consistent
+    # about the space between the two halves of a compound brand name.
+    key = dense(raw)
     for brand in table:
-        if normalize_text(brand) and normalize_text(brand) in key:
+        if dense(brand) and dense(brand) in key:
             return brand
     return ""
 

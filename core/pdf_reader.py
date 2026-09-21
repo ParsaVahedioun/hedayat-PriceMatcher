@@ -42,8 +42,12 @@ log = get_logger("pdf")
 # optionally a parenthesised range, e.g. SCAP-42-S2, VS6-1C(6-32), SCTRW/B20.
 _CODE_RE = re.compile(r"^[A-Za-z]{2,}[A-Za-z0-9]*(?:[\-/.][A-Za-z0-9()\-]+)*$")
 _CODE_TAIL_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9\-/()]*$")
-# A price: at least four digits, usually with a thousands separator.
-_PRICE_RE = re.compile(r"\d{1,3}(?:[,.\u066c]\d{3})+|\d{4,}")
+# A price: at least four digits, usually with a thousands separator. Three
+# different "Arabic comma" look-alikes show up as that separator depending
+# on which tool produced the PDF: \u066c (the actual Arabic thousands
+# separator), \u060c (plain Arabic comma, reused for the same purpose by
+# many invoicing tools) and the ordinary ",".
+_PRICE_RE = re.compile(r"\d{1,3}(?:[,.\u066c\u060c]\d{3})+|\d{4,}")
 _LATIN_ONLY = re.compile(r"^[A-Za-z0-9\-/()*.:+]+$")
 
 # rows whose text is one of these are titles/footers, never products
@@ -213,10 +217,18 @@ def _row_price(row: dict, min_price: float, max_price: float) -> float | None:
     Every price list puts the price in the outermost column; on an RTL page
     that is the smallest x. Picking by position rather than by magnitude is
     what keeps "4500K" or a 1200 mm dimension from being read as a price.
+
+    Some PDF exporters draw a thousands-separated number as several
+    independent text objects instead of one - each digit group and each
+    separator gets its own word ("1", "،", "699", "،", "000") - so besides
+    checking each word alone, adjacent digit/separator-only words are also
+    glued back together (by how close together they sit) before the price
+    pattern is tried again on the reassembled text.
     """
     best: tuple[float, float] | None = None   # (x, value)
-    for x0, _x1, text in row["words"]:
-        plain = to_english_digits(text).replace("\u066c", ",").replace("\u066b", ",")
+
+    def consider(x0: float, plain: str) -> None:
+        nonlocal best
         for match in _PRICE_RE.finditer(plain):
             raw = re.sub(r"[,.\s]", "", match.group(0))
             if not raw.isdigit():
@@ -226,14 +238,38 @@ def _row_price(row: dict, min_price: float, max_price: float) -> float | None:
                 continue
             if best is None or x0 < best[0]:
                 best = (x0, value)
+
+    for x0, _x1, text in row["words"]:
+        consider(x0, to_english_digits(text).replace("\u066c", ",").replace("\u066b", ",").replace("\u060c", ","))
+
+    run_x0 = 0.0
+    run_text = ""
+    prev_end: float | None = None
+    for x0, x1, text in sorted(row["words"], key=lambda w: w[0]):
+        plain = to_english_digits(text).replace("\u066c", ",").replace("\u066b", ",").replace("\u060c", ",")
+        is_piece = bool(re.fullmatch(r"[\d,.]+", plain))
+        if is_piece and prev_end is not None and x0 - prev_end <= 8:
+            run_text += plain
+        else:
+            if run_text:
+                consider(run_x0, run_text)
+            run_x0, run_text = x0, (plain if is_piece else "")
+        prev_end = x1 if is_piece else None
+    if run_text:
+        consider(run_x0, run_text)
+
     return best[1] if best else None
+
+
+def _is_header_row(text: str) -> bool:
+    packed = dense(text)
+    return sum(1 for word in _HEADER_WORDS if dense(word) in packed) >= 2
 
 
 def _is_noise(text: str) -> bool:
     if _NOISE_RE.search(text):
         return True
-    packed = dense(text)
-    return sum(1 for word in _HEADER_WORDS if dense(word) in packed) >= 2
+    return _is_header_row(text)
 
 
 def _fragment_of(row: dict) -> str:
@@ -278,6 +314,83 @@ def _is_section_title(row: dict, packed: str) -> bool:
     return len(dense(persian)) >= 5
 
 
+def _header_column_x(row: dict, header_word: str) -> tuple[float, float] | None:
+    """x0, x1 of a column header cell matching `header_word` exactly."""
+    target = dense(header_word)
+    for x0, x1, word_text in row["words"]:
+        if dense(word_text) == target:
+            return (x0, x1)
+    return None
+
+
+def _bare_number_in_column(row: dict, column: tuple[float, float], used_last: int) -> str:
+    """A short standalone integer positioned under a known column header.
+
+    Some price lists print a numeric column (almost always "توان" -
+    wattage) with no unit word next to the value at all; the unit only
+    appears once, in the header, which extraction never keeps around row
+    by row. Position is then the only thing telling that number apart from
+    the row's other bare numbers (carton count, a code's own digits) - a
+    row with more than one candidate in that column band is left alone
+    rather than guessed at.
+    """
+    lo, hi = column
+    center = (lo + hi) / 2.0
+    tolerance = 22.0
+    hits: list[str] = []
+    for word_index, (x0, x1, word_text) in enumerate(row["words"]):
+        if word_index <= used_last:
+            continue  # already consumed as (part of) the model code
+        plain = to_english_digits(word_text)
+        if not plain.isdigit() or not (1 <= len(plain) <= 3):
+            continue
+        if abs((x0 + x1) / 2.0 - center) <= tolerance:
+            hits.append(plain)
+    return hits[0] if len(hits) == 1 else ""
+
+
+def _pair_columns_sequentially(scanned: list[dict]) -> list[tuple[dict, dict]]:
+    """Pair a page's lone-code rows with its lone-price rows, in order.
+
+    A handful of price lists lay the model codes out as their own column,
+    typeset completely independently from the description+price column
+    next to it - each column keeps its own even vertical rhythm, so a code
+    and the row it actually belongs to can end up dozens of points apart
+    vertically, far past any reasonable "typo'd onto the line above" gap.
+    When a page has exactly as many "just a code, nothing else" rows as it
+    has "a price, no code at all" rows, pairing them by top-to-bottom order
+    is far more reliable than picking whichever one happens to sit closest.
+    """
+    codes: list[dict] = []
+    data: list[dict] = []
+    for entry in scanned:
+        if entry["used"]:
+            continue
+        text = entry["row"]["text"]
+        if not text or _is_noise(text):
+            continue
+        code, price, words = entry["code"], entry["price"], entry["row"]["words"]
+        if code and price is None and entry["last"] == len(words) - 1 and any(ch.isdigit() for ch in code):
+            # a lone model code and nothing else on its line - real model
+            # codes almost always carry a digit; a bare English annotation
+            # word ("SMD", "Flicker Free") normally does not
+            codes.append(entry)
+        elif not code and price is not None:
+            data.append(entry)
+    if len(codes) < 3:
+        return []
+    # a genuine data row for this table sits roughly in the same vertical
+    # span as the code column itself; a page title, a date stamp, or a
+    # footer address further up or down the page is not part of the table
+    # even though it too happens to have "no code, something priceable"
+    lo = min(e["row"]["y"] for e in codes) - 30
+    hi = max(e["row"]["y"] for e in codes) + 30
+    data = [entry for entry in data if lo <= entry["row"]["y"] <= hi]
+    if len(codes) != len(data):
+        return []
+    return list(zip(codes, data))
+
+
 def _products_from_rows(rows: list[dict], page_no: int, cfg: dict) -> list[PriceItem]:
     """Turn the visual rows of one page into price-list products."""
     min_price = float(cfg.get("min_valid_price", 0))
@@ -296,7 +409,18 @@ def _products_from_rows(rows: list[dict], page_no: int, cfg: dict) -> list[Price
         })
 
     section_fa = section_en = ""
+    watt_col: tuple[float, float] | None = None
     products: list[PriceItem] = []
+
+    for code_entry, data_entry in _pair_columns_sequentially(scanned):
+        code_entry["used"] = True
+        data_entry["used"] = True
+        products.append(PriceItem(
+            code=code_entry["code"],
+            price=data_entry["price"],
+            text=clean_spaces(data_entry["row"]["text"]),
+            page=page_no,
+        ))
 
     for index, entry in enumerate(scanned):
         if entry["used"]:
@@ -305,6 +429,15 @@ def _products_from_rows(rows: list[dict], page_no: int, cfg: dict) -> list[Price
         text = row["text"]
         if not text:
             continue
+
+        if _is_header_row(text):
+            # column headers repeat at the top of every page in these price
+            # lists; remember where the "توان" (wattage) column sits so the
+            # data rows below - which carry no unit word at all - can still
+            # be tagged with it further down.
+            found = _header_column_x(row, "توان")
+            if found:
+                watt_col = found
 
         code, price = entry["code"], entry["price"]
         # A decorative note ("+IC Driver", "Flicker Free") is often typeset
@@ -320,8 +453,20 @@ def _products_from_rows(rows: list[dict], page_no: int, cfg: dict) -> list[Price
                 section_en = _latin_part(text)
             elif price is not None:
                 # a data row whose code was typeset on the line above it
-                code = _borrow_code(scanned, index, gap)
-                if not code:
+                borrowed = _borrow_code(scanned, index, gap)
+                if borrowed:
+                    code = borrowed
+                elif len(re.sub(r"[0-9]", "", dense(_persian_part(text)))) >= 4:
+                    # no latin model code anywhere nearby - many Iranian
+                    # price lists (numbered "ردیف" catalogues such as
+                    # Khadari/Omidnoor or Omega) never print one at all,
+                    # identifying a product only by its Persian description
+                    # and a row number that repeats on every page. Keep the
+                    # row as a codeless product rather than dropping it: the
+                    # matcher already scores a codeless price row purely on
+                    # spec/text agreement (see Matcher.code_score).
+                    code = ""
+                else:
                     continue
             else:
                 continue
@@ -333,9 +478,16 @@ def _products_from_rows(rows: list[dict], page_no: int, cfg: dict) -> list[Price
             continue
 
         body = clean_spaces(" ".join(w[2] for w in row["words"][entry["last"] + 1:]))
+        if watt_col is not None:
+            watt_value = _bare_number_in_column(row, watt_col, entry["last"])
+            if watt_value:
+                # makes the value a genuine "N وات" for extract_specs to pick
+                # up as a real (hard) watt spec, not just weak bare-number
+                # evidence - the column position already told us what it is
+                body = clean_spaces(body + " " + watt_value + " وات")
         entry["used"] = True
         item = PriceItem(
-            code=code + _trailing_fragment(scanned, index, gap),
+            code=code + _trailing_fragment(scanned, index, gap) if code else "",
             price=price,
             text=body,
             section_fa=section_fa,

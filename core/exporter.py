@@ -46,6 +46,16 @@ COLUMNS = [
     ("stock", "موجودي", 9.25, "##.###"),
     ("price", "قیمت", 16, "#,##0"),
 ]
+# appended after the warehouse's own 4 columns - not present in its file,
+# but this is exactly what makes "only priced rows", "only low stock", or
+# "only this brand" a plain Excel filter instead of a re-export request
+EXTRA_COLUMNS = [
+    ("brand", "برند", 16, "General"),
+    ("status_label", "وضعیت", 16, "General"),
+]
+STATUS_LABELS = {
+    "EXACT": "دقیق", "HIGH": "معتبر", "REVIEW": "نیاز به بررسی", "NOT_FOUND": "بدون قیمت",
+}
 
 
 def _code_value(value):
@@ -61,7 +71,7 @@ def _code_value(value):
     return text
 
 
-def export_excel(rows: Sequence[dict], path: str) -> str:
+def export_excel(rows: Sequence[dict], path: str, stats: dict | None = None) -> str:
     try:
         from openpyxl import Workbook
         from openpyxl.styles import Alignment, Font, PatternFill
@@ -75,29 +85,50 @@ def export_excel(rows: Sequence[dict], path: str) -> str:
         sheet.title = "Price Match"
         sheet.sheet_view.rightToLeft = True
 
+        columns = COLUMNS + EXTRA_COLUMNS
+        run_brand = (stats or {}).get("brand") or ""
+
         header_font = Font(name=HEADER_FONT_NAME, size=HEADER_FONT_SIZE, bold=True)
         header_fill = PatternFill("solid", fgColor=HEADER_FILL_COLOR)
         header_align = Alignment(horizontal="center")
         data_font = Font(name=DATA_FONT_NAME, size=DATA_FONT_SIZE)
 
-        for column, (_, label, _, _) in enumerate(COLUMNS, start=1):
+        for column, (_, label, _, _) in enumerate(columns, start=1):
             cell = sheet.cell(row=1, column=column, value=label)
             cell.font = header_font
             cell.fill = header_fill
             cell.alignment = header_align
         sheet.row_dimensions[1].height = HEADER_ROW_HEIGHT
 
+        last_row = 1
         for index, row in enumerate(rows, start=2):
-            for column, (key, _, _, number_format) in enumerate(COLUMNS, start=1):
-                value = _code_value(row.get(key)) if key == "code" else row.get(key)
+            last_row = index
+            for column, (key, _, _, number_format) in enumerate(columns, start=1):
+                if key == "code":
+                    value = _code_value(row.get("code"))
+                elif key == "brand":
+                    # which PDF/brand actually priced this row; for a single-
+                    # PDF run every row shares the one brand that was typed in
+                    value = row.get("source") or (run_brand if row.get("price") is not None else "")
+                elif key == "status_label":
+                    value = STATUS_LABELS.get(row.get("status"), "")
+                else:
+                    value = row.get(key)
                 cell = sheet.cell(row=index, column=column, value=value)
                 cell.font = data_font
                 if number_format != "General":
                     cell.number_format = number_format
             sheet.row_dimensions[index].height = DATA_ROW_HEIGHT
 
-        for column, (_, _, width, _) in enumerate(COLUMNS, start=1):
+        for column, (_, _, width, _) in enumerate(columns, start=1):
             sheet.column_dimensions[get_column_letter(column)].width = width
+
+        # lets the person filter the result themselves in Excel - only
+        # priced rows, only low stock, only one brand, whatever they need -
+        # without coming back here to ask for a differently-scoped export
+        last_col = get_column_letter(len(columns))
+        sheet.auto_filter.ref = f"A1:{last_col}{last_row}"
+        sheet.freeze_panes = "A2"
 
         _ensure_dir(path)
         workbook.save(path)
@@ -147,6 +178,8 @@ PDF_COLUMNS = [
     ("name", "نام کالا", 130),
     ("code", "کد کالا", 24),
 ]
+# added only when at least one row actually carries a source (multi-PDF runs)
+PDF_SOURCE_COLUMN = ("source", "منبع (PDF)", 30)
 
 
 def export_pdf(rows: Sequence[dict], path: str, stats: dict | None = None) -> str:
@@ -179,21 +212,28 @@ def export_pdf(rows: Sequence[dict], path: str, stats: dict | None = None) -> st
             story.append(Paragraph(_rtl(f"برند: {brand}"), info_style))
         story.append(Spacer(1, 4 * mm))
 
-        data = [[_rtl(label) for _, label, _ in PDF_COLUMNS]]
+        # several PDFs were merged into this run - show which one priced
+        # each row, otherwise the extra column is just noise
+        multi_source = any((row.get("source") or "").strip() for row in rows)
+        columns = PDF_COLUMNS + [PDF_SOURCE_COLUMN] if multi_source else PDF_COLUMNS
+
+        data = [[_rtl(label) for _, label, _ in columns]]
         for row in rows:
             line = []
-            for key, _, _ in PDF_COLUMNS:
+            for key, _, _ in columns:
                 if key == "price":
                     line.append(format_price(row.get("price")))
                 elif key == "stock":
                     line.append(format_price(row.get("stock")))
                 elif key == "name":
                     line.append(_rtl(str(row.get("name", ""))[:80]))
+                elif key == "source":
+                    line.append(_rtl(str(row.get("source") or "-")))
                 else:
                     line.append(str(row.get(key) or "-"))
             data.append(line)
 
-        table = Table(data, colWidths=[width * mm for _, _, width in PDF_COLUMNS],
+        table = Table(data, colWidths=[width * mm for _, _, width in columns],
                       repeatRows=1)
         style = [
             ("FONTNAME", (0, 0), (-1, -1), font),

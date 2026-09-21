@@ -24,8 +24,7 @@
    '(1)\\price-matcher\\.venv\\Lib\\site-packages\\PIL\\_webp.cp314-win_amd64.pyd',
    'EXTENSION'),
   ('PriceMatcher.exe',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\build\\PriceMatcher\\PriceMatcher.exe',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\build\\PriceMatcher\\PriceMatcher.exe',
    'EXECUTABLE'),
   ('VCRUNTIME140.dll',
    'C:\\Users\\k.musavi\\AppData\\Local\\Python\\pythoncore-3.14-64\\VCRUNTIME140.dll',
@@ -83,8 +82,7 @@
    'C:\\Users\\k.musavi\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\_zstd.pyd',
    'EXTENSION'),
   ('base_library.zip',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\build\\PriceMatcher\\base_library.zip',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\build\\PriceMatcher\\base_library.zip',
    'DATA'),
   ('bidi\\bidi.cp314-win_amd64.pyd',
    'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
@@ -107,8 +105,7 @@
    '(1)\\price-matcher\\.venv\\Lib\\site-packages\\clr_loader\\ffi\\dlls\\x86\\ClrLoader.dll',
    'BINARY'),
   ('config.json',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\config.json',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\config.json',
    'DATA'),
   ('libcrypto-3.dll',
    'C:\\Users\\k.musavi\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\libcrypto-3.dll',
@@ -581,16 +578,13 @@
    'ipsum.txt',
    'DATA'),
   ('ui\\app.js',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\ui\\app.js',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\ui\\app.js',
    'DATA'),
   ('ui\\index.html',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\ui\\index.html',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\ui\\index.html',
    'DATA'),
   ('ui\\style.css',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\ui\\style.css',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\ui\\style.css',
    'DATA'),
   ('unicodedata.pyd',
    'C:\\Users\\k.musavi\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs\\unicodedata.pyd',

@@ -52,6 +52,16 @@ _CHAR_MAP = {
 
 _DIACRITICS = re.compile(r"[\u064b-\u0652\u0653-\u0655\u0670\u06d6-\u06ed]")
 
+# ------------------------------------------------------------ spelling synonyms
+# Two spellings for the same everyday word, both common in Iranian price
+# lists/inventories, that are *not* a plain character look-alike (unlike
+# _CHAR_MAP above, which folds a single letter everywhere it occurs) - each
+# entry here is one whole word, so it cannot accidentally eat into another
+# word that happens to share the same letters.
+_TEXT_SYNONYMS: dict[str, str] = {
+    "\u0628\u0627\u0637\u0631\u06cc": "\u0628\u0627\u062a\u0631\u06cc",  # باطری -> باتری (battery)
+}
+
 _DIGIT_MAP = {}
 for i in range(10):
     _DIGIT_MAP[chr(0x06F0 + i)] = str(i)   # Persian
@@ -94,14 +104,18 @@ def shape_to_plain(text: str) -> str:
 
 
 def fix_persian_chars(text: str) -> str:
-    """Unify Arabic/Persian look-alike characters."""
+    """Unify Arabic/Persian look-alike characters and common respellings."""
     if not text:
         return ""
     text = fix_pdf_glyphs(text)
     for src, dst in _CHAR_MAP.items():
         if src in text:
             text = text.replace(src, dst)
-    return _DIACRITICS.sub("", text)
+    text = _DIACRITICS.sub("", text)
+    for src, dst in _TEXT_SYNONYMS.items():
+        if src in text:
+            text = text.replace(src, dst)
+    return text
 
 
 def to_english_digits(text: str) -> str:

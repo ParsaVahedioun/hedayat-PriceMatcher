@@ -1,5 +1,4 @@
-('C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
- '(1)\\price-matcher\\build\\PriceMatcher\\PriceMatcher.pkg',
+('C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\build\\PriceMatcher\\PriceMatcher.pkg',
  {'BINARY': True,
   'DATA': True,
   'EXECUTABLE': True,
@@ -11,28 +10,22 @@
   'SYMLINK': False},
  [('pyi-contents-directory _internal', '', 'OPTION'),
   ('PYZ-00.pyz',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\build\\PriceMatcher\\PYZ-00.pyz',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\build\\PriceMatcher\\PYZ-00.pyz',
    'PYZ'),
   ('struct',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\build\\PriceMatcher\\localpycs\\struct.pyc',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\build\\PriceMatcher\\localpycs\\struct.pyc',
    'PYMODULE'),
   ('pyimod01_archive',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\build\\PriceMatcher\\localpycs\\pyimod01_archive.pyc',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\build\\PriceMatcher\\localpycs\\pyimod01_archive.pyc',
    'PYMODULE'),
   ('pyimod02_importers',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\build\\PriceMatcher\\localpycs\\pyimod02_importers.pyc',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\build\\PriceMatcher\\localpycs\\pyimod02_importers.pyc',
    'PYMODULE'),
   ('pyimod03_ctypes',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\build\\PriceMatcher\\localpycs\\pyimod03_ctypes.pyc',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\build\\PriceMatcher\\localpycs\\pyimod03_ctypes.pyc',
    'PYMODULE'),
   ('pyimod04_pywin32',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
-   '(1)\\price-matcher\\build\\PriceMatcher\\localpycs\\pyimod04_pywin32.pyc',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\build\\PriceMatcher\\localpycs\\pyimod04_pywin32.pyc',
    'PYMODULE'),
   ('pyiboot01_bootstrap',
    'C:\\Users\\k.musavi\\Desktop\\price-matcher3 '
@@ -55,7 +48,7 @@
    '(1)\\price-matcher\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_setuptools.py',
    'PYSOURCE'),
   ('main',
-   'C:\\Users\\k.musavi\\Desktop\\price-matcher3 (1)\\price-matcher\\main.py',
+   'C:\\Users\\k.musavi\\Desktop\\price-matcher-updated-2.1\\price-matcher\\main.py',
    'PYSOURCE')],
  'python314.dll',
  True,

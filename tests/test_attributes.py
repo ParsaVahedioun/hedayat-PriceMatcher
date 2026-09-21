@@ -49,6 +49,12 @@ class CodeAndBrandTests(unittest.TestCase):
         self.assertEqual(detect_brand("چسب برق ویسنا"), "ویسنا")
         self.assertEqual(detect_brand("چسب برق شوان"), "")
 
+    def test_brand_detection_ignores_the_space_inside_a_compound_name(self):
+        # "امیدنور" and "امید نور" are the same brand - Persian PDFs/Excel
+        # sheets are never consistent about the space between the two halves
+        self.assertEqual(detect_brand("لامپ امیدنور 9 وات", {"امید نور": ()}), "امید نور")
+        self.assertEqual(detect_brand("لامپ امید نور 9 وات", {"امیدنور": ()}), "امیدنور")
+
 
 class VocabularyTests(unittest.TestCase):
     def test_single_phase_is_expanded_to_the_pole_wording_of_the_price_list(self):

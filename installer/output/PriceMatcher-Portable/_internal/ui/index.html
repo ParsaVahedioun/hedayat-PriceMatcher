@@ -22,20 +22,13 @@
   </header>
 
   <div class="card">
-    <div class="picker" id="pick-pdf">
-      <span class="picker-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/>
-          <path d="M14 3v5h5"/>
-          <path d="M9 13h6M9 17h4"/>
-        </svg>
-      </span>
-      <div class="picker-info">
-        <span class="picker-label">فایل PDF لیست قیمت</span>
-        <span class="picker-file" id="pdf-name">انتخاب نشده</span>
-      </div>
-      <button class="btn btn-ghost" data-action="select-pdf">انتخاب PDF</button>
+    <div class="pdf-list-header">
+      <span class="picker-label">فایل‌های PDF لیست قیمت (یک یا چند فایل)</span>
+      <button class="btn btn-ghost" data-action="select-pdf">+ افزودن PDF</button>
     </div>
+    <ul class="pdf-list" id="pdf-list">
+      <li class="pdf-list-empty" id="pdf-list-empty">هنوز فایلی اضافه نشده — روی «افزودن PDF» بزنید (می‌توانید چند فایل را با هم انتخاب کنید).</li>
+    </ul>
 
     <div class="picker" id="pick-excel">
       <span class="picker-icon" aria-hidden="true">
@@ -51,15 +44,7 @@
       <button class="btn btn-ghost" data-action="select-excel">انتخاب Excel</button>
     </div>
 
-    <div class="field">
-      <label for="brand-name">
-        <svg class="field-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 2 3 7v6c0 5 3.8 8.4 9 9 5.2-.6 9-4 9-9V7l-9-5Z"/>
-        </svg>
-        نام برند لیست قیمت
-      </label>
-      <input type="text" id="brand-name" placeholder="مثلاً: شوان">
-    </div>
+    <p class="hint hint-muted">برای هر فایل PDF نام برند همان لیست قیمت را وارد کنید (مثلاً «شوان» یا «ویسنا») — تطبیق هر فایل فقط روی کالاهایی از انبار انجام می‌شود که همان برند را در نامشان دارند. اگر چند PDF اضافه کنید، هر ردیف انبار با اولین PDF که برایش قیمت پیدا کند قیمت‌گذاری می‌شود؛ فایل‌های بعدی فقط ردیف‌های بی‌قیمت‌مانده را پر می‌کنند — ترتیب فایل‌ها در فهرست بالا همان ترتیب اولویت است.</p>
 
     <button class="btn btn-primary btn-block" id="btn-start" data-action="start" disabled>شروع تطبیق</button>
     <p class="hint" id="home-error"></p>
@@ -108,6 +93,7 @@
 <section id="view-results" class="view">
   <p class="result-brand" id="result-brand"></p>
   <div class="summary" id="summary"></div>
+  <div class="files-summary" id="files-summary"></div>
 
   <div class="toolbar">
     <div class="filters" id="filters">
@@ -136,7 +122,7 @@
     <table id="result-table">
       <thead>
         <tr>
-          <th>کد کالا</th><th>نام کالا</th><th>موجودی</th><th>قیمت (تومان)</th>
+          <th>کد کالا</th><th>نام کالا</th><th>موجودی</th><th>قیمت (تومان)</th><th>منبع (PDF)</th>
         </tr>
       </thead>
       <tbody id="result-body"></tbody>
